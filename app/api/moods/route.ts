@@ -16,3 +16,20 @@ export async function POST(request: Request) {
   })
   return NextResponse.json(entry)
 }
+
+export async function DELETE(request: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get('id')
+  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+
+  const mood = await prisma.mood.findUnique({ where: { id } })
+  if (!mood || mood.ownerId !== (session.user as any).id) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
+  await prisma.mood.delete({ where: { id } })
+  return NextResponse.json({ ok: true })
+}
