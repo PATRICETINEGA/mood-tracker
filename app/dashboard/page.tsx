@@ -3,6 +3,7 @@ import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import AddMood from '@/components/AddMood'
+import DeleteMoodButton from '@/components/DeleteMoodButton'
 export default async function Dash() {
   const s = await getSession()
   if (!s) redirect('/login')
@@ -17,9 +18,12 @@ export default async function Dash() {
       <AddMood />
       <div className="space-y-2">
         {moods.map((m: any) => (
-          <div key={m.id} className="bg-white p-3 rounded shadow text-sm">
-            <div className="flex justify-between"><span className="font-medium capitalize">{m.mood}</span><span className="text-xs text-gray-400">{m.date}</span></div>
-            {m.note && <p className="text-gray-600 mt-1">{m.note}</p>}
+          <div key={m.id} className="bg-white p-3 rounded shadow flex justify-between items-start text-sm">
+            <div>
+              <div className="flex justify-between"><span className="font-medium capitalize">{m.mood}</span><span className="text-xs text-gray-400 ml-2">{m.date}</span></div>
+              {m.note && <p className="text-gray-600 mt-1">{m.note}</p>}
+            </div>
+            <DeleteMoodButton id={m.id} />
           </div>
         ))}
         {moods.length === 0 && <p className="text-gray-500">No entries yet</p>}
